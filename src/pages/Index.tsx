@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import LocationCard from "@/components/LocationCard";
 import SaudiMap from "@/components/SaudiMap";
@@ -79,8 +80,16 @@ const Index = () => {
               ))}
             </div>
 
-            {/* Login Button */}
-            <div className="flex justify-center pt-4">
+            {/* Buttons */}
+            <div className="flex flex-col gap-4 pt-4">
+              <Link to="/visa-analysis" className="w-full">
+                <Button
+                  className="w-full px-8 py-6 bg-saudi-green hover:bg-saudi-green-dark text-white"
+                >
+                  <span className="font-bold text-lg">واجهة تحليل التأشيرات</span>
+                </Button>
+              </Link>
+              
               <Button
                 variant="outline"
                 className="px-8 py-6 text-saudi-green border-saudi-green hover:bg-saudi-green-lighter"
