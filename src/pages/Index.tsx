@@ -25,7 +25,7 @@ const Index = () => {
       name: "محمد أحمد",
       nationality: "مصري",
       applicationDate: "2024-11-28",
-      purpose: "عمل",
+      purpose: "سياحة",
       status: "low-risk" as const,
       passportNumber: "A12345678",
     },
