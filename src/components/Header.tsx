@@ -1,5 +1,6 @@
 import { Search, Globe } from "lucide-react";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -21,9 +22,16 @@ const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden lg:flex items-center gap-6">
-            <Button variant="ghost" className="text-foreground hover:text-primary">
-              الرئيسية
-            </Button>
+            <Link to="/">
+              <Button variant="ghost" className="text-foreground hover:text-primary">
+                الرئيسية
+              </Button>
+            </Link>
+            <Link to="/visa-analysis">
+              <Button variant="ghost" className="text-foreground hover:text-primary">
+                تحليل التأشيرات
+              </Button>
+            </Link>
             <Button variant="ghost" className="text-foreground hover:text-primary">
               عن ابشر
             </Button>
