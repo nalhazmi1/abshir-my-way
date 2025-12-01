@@ -15,7 +15,7 @@ const VisaAnalysis = () => {
     name: "محمد أحمد",
     nationality: "مصري",
     passportNumber: "A12345678",
-    purpose: "عمل",
+    purpose: "سياحة",
     duration: "90 يوم",
     previousVisits: 3,
     phone: "+20 123 456 7890",
