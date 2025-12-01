@@ -22,7 +22,7 @@ const Index = () => {
   const applications = [
     {
       id: "VSA-2024-1234",
-      name: "محمد أحمد السالم",
+      name: "محمد أحمد",
       nationality: "مصري",
       applicationDate: "2024-11-28",
       purpose: "عمل",
@@ -31,7 +31,7 @@ const Index = () => {
     },
     {
       id: "VSA-2024-1235",
-      name: "فاطمة علي المحمدي",
+      name: "فاطمة علي",
       nationality: "سوري",
       applicationDate: "2024-11-29",
       purpose: "سياحة",
@@ -40,7 +40,7 @@ const Index = () => {
     },
     {
       id: "VSA-2024-1236",
-      name: "أحمد حسن الكريم",
+      name: "أحمد حسن",
       nationality: "يمني",
       applicationDate: "2024-11-27",
       purpose: "عمرة",
@@ -49,7 +49,7 @@ const Index = () => {
     },
     {
       id: "VSA-2024-1237",
-      name: "خالد محمود الشامي",
+      name: "خالد محمود",
       nationality: "لبناني",
       applicationDate: "2024-11-26",
       purpose: "عمل",
@@ -58,7 +58,7 @@ const Index = () => {
     },
     {
       id: "VSA-2024-1238",
-      name: "مريم سعيد الهاشمي",
+      name: "مريم سعيد",
       nationality: "أردني",
       applicationDate: "2024-11-30",
       purpose: "زيارة عائلية",
@@ -67,7 +67,7 @@ const Index = () => {
     },
     {
       id: "VSA-2024-1239",
-      name: "سعيد عبدالله العمري",
+      name: "سعيد عبدالله",
       nationality: "مغربي",
       applicationDate: "2024-11-25",
       purpose: "استثمار",
