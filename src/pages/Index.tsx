@@ -4,6 +4,7 @@ import { ChevronDown, Search, Filter, Download } from "lucide-react";
 import Header from "@/components/Header";
 import VisaApplicationCard from "@/components/VisaApplicationCard";
 import FloatingButtons from "@/components/FloatingButtons";
+import RiskCharts from "@/components/RiskCharts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -184,6 +185,9 @@ const Index = () => {
             </Card>
           ))}
         </div>
+
+        {/* Risk Charts */}
+        <RiskCharts applicants={applications} />
 
         {/* Filters and Search */}
         <div className="mb-6 space-y-4">
