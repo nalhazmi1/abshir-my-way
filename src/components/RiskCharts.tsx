@@ -11,6 +11,7 @@ import {
   Pie,
   Cell,
   Legend,
+  LabelList,
 } from "recharts";
 
 interface Applicant {
@@ -119,7 +120,9 @@ const RiskCharts = ({ applicants }: RiskChartsProps) => {
                     borderRadius: "8px",
                   }}
                 />
-                <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]}>
+                  <LabelList dataKey="value" position="right" fill="hsl(var(--foreground))" fontSize={12} fontWeight={600} />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -137,38 +140,48 @@ const RiskCharts = ({ applicants }: RiskChartsProps) => {
         </CardHeader>
         <CardContent>
           {visaTypeChartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={visaTypeChartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} (${(percent * 100).toFixed(0)}%)`
-                  }
-                  labelLine={false}
-                >
-                  {visaTypeChartData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-3 justify-center">
+                {visaTypeChartData.map((item, index) => (
+                  <div key={item.name} className="flex items-center gap-2 text-sm">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number) => [`${value} متقدم`, "العدد"]}
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+                    <span className="font-medium">{item.name}</span>
+                    <span className="text-muted-foreground">({item.value})</span>
+                  </div>
+                ))}
+              </div>
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={visaTypeChartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {visaTypeChartData.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number) => [`${value} متقدم`, "العدد"]}
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
             <div className="h-[250px] flex items-center justify-center text-muted-foreground">
               لا توجد بيانات
@@ -203,6 +216,7 @@ const RiskCharts = ({ applicants }: RiskChartsProps) => {
                   }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="value" position="top" fill="hsl(var(--foreground))" fontSize={12} fontWeight={600} formatter={(value: number) => `${value}%`} />
                   {avgRiskChartData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
