@@ -7,6 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Violation {
   type: string;
@@ -53,6 +60,7 @@ const VisaAnalysis = () => {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<string>("not_started");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -163,9 +171,21 @@ const VisaAnalysis = () => {
             </Link>
             <h1 className="text-3xl font-bold text-foreground">تحليل المخاطر</h1>
           </div>
-          <Badge variant="outline" className="text-sm">
-            رقم التأشيرة: {id}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Select value={verificationStatus} onValueChange={setVerificationStatus}>
+              <SelectTrigger className="w-[180px] bg-background">
+                <SelectValue placeholder="حالة التحقق" />
+              </SelectTrigger>
+              <SelectContent className="bg-background">
+                <SelectItem value="not_started">لم يبدأ</SelectItem>
+                <SelectItem value="in_progress">جاري التحقق</SelectItem>
+                <SelectItem value="verified">تم التحقق</SelectItem>
+              </SelectContent>
+            </Select>
+            <Badge variant="outline" className="text-sm">
+              رقم التأشيرة: {id}
+            </Badge>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
