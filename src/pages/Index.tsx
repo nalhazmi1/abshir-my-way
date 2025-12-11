@@ -3,7 +3,6 @@ import { ChevronDown, Search, Filter, Download } from "lucide-react";
 import Header from "@/components/Header";
 import VisaApplicationCard from "@/components/VisaApplicationCard";
 import FloatingButtons from "@/components/FloatingButtons";
-import HighRiskNotifications from "@/components/HighRiskNotifications";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -155,11 +154,10 @@ const Index = () => {
       
       <main className="container mx-auto px-4 py-8">
         {/* Page Title */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground">
             تحليل المخاطر
           </h1>
-          <HighRiskNotifications applicants={applications} />
         </div>
 
         {/* Statistics Cards */}
