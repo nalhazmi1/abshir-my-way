@@ -104,6 +104,23 @@ const Index = () => {
     });
   };
 
+  // Get unique nationalities from data
+  const nationalities = [...new Set(applications.map(a => a.nationality))];
+
+  // Filter applications
+  const filteredApplications = applications.filter(app => {
+    const matchesSearch = searchQuery === "" || 
+      app.full_name.includes(searchQuery) || 
+      app.passport_number.includes(searchQuery) ||
+      app.id.includes(searchQuery);
+    
+    const matchesVisaType = selectedVisaType === "" || selectedVisaType === "all" || app.visa_type === selectedVisaType;
+    
+    const matchesNationality = selectedNationality === "" || selectedNationality === "all" || app.nationality === selectedNationality;
+    
+    return matchesSearch && matchesVisaType && matchesNationality;
+  });
+
   const stats = [
     { label: "إجمالي الطلبات", value: applications.length.toString(), color: "bg-blue-500" },
     { label: "قيد المراجعة", value: applications.filter(a => a.status === "pending").length.toString(), color: "bg-yellow-500" },
@@ -180,19 +197,16 @@ const Index = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">جميع الجنسيات</SelectItem>
-                <SelectItem value="egyptian">مصري</SelectItem>
-                <SelectItem value="syrian">سوري</SelectItem>
-                <SelectItem value="yemeni">يمني</SelectItem>
-                <SelectItem value="lebanese">لبناني</SelectItem>
-                <SelectItem value="jordanian">أردني</SelectItem>
-                <SelectItem value="moroccan">مغربي</SelectItem>
+                {nationalities.map(nationality => (
+                  <SelectItem key={nationality} value={nationality}>{nationality}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              عرض {applications.length} من أصل {applications.length} طلب
+              عرض {filteredApplications.length} من أصل {applications.length} طلب
             </p>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" className="gap-2" onClick={exportToCSV}>
@@ -212,7 +226,7 @@ const Index = () => {
           <div className="text-center py-8 text-muted-foreground">جاري التحميل...</div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {applications.map((application) => (
+            {filteredApplications.map((application) => (
               <VisaApplicationCard
                 key={application.id}
                 id={application.id}
