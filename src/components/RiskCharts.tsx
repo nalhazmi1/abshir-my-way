@@ -26,6 +26,21 @@ interface RiskChartsProps {
 const COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899"];
 
 const RiskCharts = ({ applicants }: RiskChartsProps) => {
+  // Check if there's any analyzed data
+  const analyzedApplicants = applicants.filter((a) => a.risk_score !== null);
+  
+  if (analyzedApplicants.length === 0) {
+    return (
+      <Card className="mb-8">
+        <CardContent className="p-8 text-center">
+          <p className="text-muted-foreground">
+            لا توجد بيانات للرسوم البيانية. قم بتحليل الوافدين أولاً للحصول على إحصائيات المخاطر.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Calculate high-risk count by nationality
   const nationalityRiskData = applicants
     .filter((a) => a.risk_score !== null && a.risk_score >= 60)

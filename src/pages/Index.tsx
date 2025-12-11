@@ -146,9 +146,15 @@ const Index = () => {
     return matchesSearch && matchesVisaType && matchesNationality;
   });
 
+  const analyzedApplicants = applications.filter(a => a.risk_score !== null);
+  const highRiskCount = analyzedApplicants.filter(a => a.risk_score! >= 60).length;
+  const lowRiskCount = analyzedApplicants.filter(a => a.risk_score! < 60).length;
+  const notAnalyzedCount = applications.filter(a => a.risk_score === null).length;
+
   const stats = [
-    { label: "مخاطر منخفضة", value: applications.filter(a => a.risk_score !== null && a.risk_score < 60).length.toString(), color: "bg-green-500", route: "/risk-applicants/low" },
-    { label: "مخاطر عالية", value: applications.filter(a => a.risk_score !== null && a.risk_score >= 60).length.toString(), color: "bg-red-500", route: "/risk-applicants/high" },
+    { label: "مخاطر منخفضة", value: lowRiskCount.toString(), color: "bg-green-500", route: "/risk-applicants/low" },
+    { label: "مخاطر عالية", value: highRiskCount.toString(), color: "bg-red-500", route: "/risk-applicants/high" },
+    { label: "لم يتم التحليل", value: notAnalyzedCount.toString(), color: "bg-gray-500", route: null },
   ];
 
   return (
@@ -164,12 +170,12 @@ const Index = () => {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
           {stats.map((stat, index) => (
             <Card 
               key={index} 
-              className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => navigate(stat.route)}
+              className={`overflow-hidden ${stat.route ? 'cursor-pointer hover:shadow-md' : ''} transition-shadow`}
+              onClick={() => stat.route && navigate(stat.route)}
             >
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
