@@ -172,16 +172,19 @@ const VisaAnalysis = () => {
             <h1 className="text-3xl font-bold text-foreground">تحليل المخاطر</h1>
           </div>
           <div className="flex items-center gap-3">
-            <Select value={verificationStatus} onValueChange={setVerificationStatus}>
-              <SelectTrigger className="w-[180px] bg-background">
-                <SelectValue placeholder="حالة التحقق" />
-              </SelectTrigger>
-              <SelectContent className="bg-background">
-                <SelectItem value="not_started">لم يبدأ</SelectItem>
-                <SelectItem value="in_progress">جاري التحقق</SelectItem>
-                <SelectItem value="verified">تم التحقق</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">حالة التحقق:</span>
+              <Select value={verificationStatus} onValueChange={setVerificationStatus}>
+                <SelectTrigger className="w-[180px] bg-background">
+                  <SelectValue placeholder="حالة التحقق" />
+                </SelectTrigger>
+                <SelectContent className="bg-background">
+                  <SelectItem value="not_started">لم يبدأ</SelectItem>
+                  <SelectItem value="in_progress">جاري التحقق</SelectItem>
+                  <SelectItem value="verified">تم التحقق</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Badge variant="outline" className="text-sm">
               رقم التأشيرة: {id}
             </Badge>
