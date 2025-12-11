@@ -284,7 +284,7 @@ const VisaAnalysis = () => {
                   <Shield className="w-16 h-16 mx-auto text-primary/50 mb-4" />
                   <h3 className="text-xl font-bold mb-2">تحليل المخاطر بالذكاء الاصطناعي</h3>
                   <p className="text-muted-foreground mb-6">
-                    اضغط لتحليل بيانات المتقدم والتنبؤ بدرجة الخطورة
+                    اضغط لتحليل بيانات الوافد والتنبؤ بدرجة الخطورة
                   </p>
                   <Button onClick={analyzeRisk} disabled={analyzing} size="lg">
                     {analyzing ? (
