@@ -438,7 +438,7 @@ const VisaAnalysis = () => {
                 <CardTitle>دعم القرار</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className={`grid ${isHighRisk ? "md:grid-cols-2" : "md:grid-cols-1"} gap-4`}>
                   <Button
                     size="lg"
                     className="w-full h-16 text-lg font-bold bg-green-600 hover:bg-green-700 text-white"
@@ -447,15 +447,17 @@ const VisaAnalysis = () => {
                     <CheckCircle className="w-6 h-6 ml-2" />
                     منح الإذن بالدخول
                   </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full h-16 text-lg font-bold border-2 border-orange-500 text-orange-600 hover:bg-orange-50"
-                    onClick={handleFurtherReview}
-                  >
-                    <AlertTriangle className="w-6 h-6 ml-2" />
-                    مراجعة إضافية
-                  </Button>
+                  {isHighRisk && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="w-full h-16 text-lg font-bold border-2 border-orange-500 text-orange-600 hover:bg-orange-50"
+                      onClick={handleFurtherReview}
+                    >
+                      <AlertTriangle className="w-6 h-6 ml-2" />
+                      مراجعة إضافية
+                    </Button>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground text-center mt-4">
                   القرار النهائي يعتمد على تقييم المسؤول المختص
