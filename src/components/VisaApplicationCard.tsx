@@ -66,6 +66,12 @@ const VisaApplicationCard = ({
             </Badge>
           </div>
 
+          <div className="mb-3">
+            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+              {purpose}
+            </Badge>
+          </div>
+
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -79,20 +85,6 @@ const VisaApplicationCard = ({
               <div>
                 <p className="text-muted-foreground text-xs">تاريخ التقديم</p>
                 <p className="font-semibold">{applicationDate}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4 text-muted-foreground" />
-              <div>
-                <p className="text-muted-foreground text-xs">غرض الزيارة</p>
-                <p className="font-semibold">{purpose}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4"></div>
-              <div>
-                <p className="text-muted-foreground text-xs">رقم الطلب</p>
-                <p className="font-semibold text-primary">{id}</p>
               </div>
             </div>
           </div>
