@@ -264,6 +264,7 @@ const Index = () => {
                 nationality={application.nationality}
                 purpose={application.visa_type}
                 passportNumber={application.passport_number}
+                riskScore={application.risk_score}
               />
             ))}
           </div>
