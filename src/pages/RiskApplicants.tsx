@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowRight, AlertTriangle, Shield } from "lucide-react";
+import { ArrowRight, AlertTriangle, Shield, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,8 +23,33 @@ const RiskApplicants = () => {
   const [applications, setApplications] = useState<VisaApplicant[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const isHighRisk = level === "high";
-  const title = isHighRisk ? "مخاطر عالية" : "مخاطر منخفضة";
+  const getRiskConfig = () => {
+    switch (level) {
+      case "high":
+        return {
+          title: "مخاطر عالية",
+          color: "red",
+          Icon: AlertTriangle,
+          filter: (score: number) => score >= 70,
+        };
+      case "medium":
+        return {
+          title: "مخاطر متوسطة",
+          color: "yellow",
+          Icon: AlertCircle,
+          filter: (score: number) => score >= 40 && score < 70,
+        };
+      default:
+        return {
+          title: "مخاطر منخفضة",
+          color: "green",
+          Icon: Shield,
+          filter: (score: number) => score < 40,
+        };
+    }
+  };
+
+  const config = getRiskConfig();
 
   useEffect(() => {
     fetchApplications();
@@ -48,8 +73,18 @@ const RiskApplicants = () => {
 
   const filteredApplicants = applications.filter((app) => {
     if (app.risk_score === null) return false;
-    return isHighRisk ? app.risk_score >= 60 : app.risk_score < 60;
+    return config.filter(app.risk_score);
   });
+
+  const getColorClasses = (type: "bg" | "text" | "badge") => {
+    const colorMap = {
+      high: { bg: "bg-red-500/10", text: "text-red-500", badge: "bg-red-500/10 text-red-600" },
+      medium: { bg: "bg-yellow-500/10", text: "text-yellow-600", badge: "bg-yellow-500/10 text-yellow-600" },
+      low: { bg: "bg-green-500/10", text: "text-green-500", badge: "bg-green-500/10 text-green-600" },
+    };
+    const key = level === "high" ? "high" : level === "medium" ? "medium" : "low";
+    return colorMap[key][type];
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,20 +103,14 @@ const RiskApplicants = () => {
           </Button>
           <div className="flex items-center gap-3">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                isHighRisk ? "bg-red-500/10" : "bg-green-500/10"
-              }`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center ${getColorClasses("bg")}`}
             >
-              {isHighRisk ? (
-                <AlertTriangle className="w-6 h-6 text-red-500" />
-              ) : (
-                <Shield className="w-6 h-6 text-green-500" />
-              )}
+              <config.Icon className={`w-6 h-6 ${getColorClasses("text")}`} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">{title}</h1>
+              <h1 className="text-3xl font-bold text-foreground">{config.title}</h1>
               <p className="text-muted-foreground">
-                {filteredApplicants.length} متقدم
+                {filteredApplicants.length} وافد
               </p>
             </div>
           </div>
@@ -94,7 +123,7 @@ const RiskApplicants = () => {
           </div>
         ) : filteredApplicants.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            لا يوجد متقدمين في هذه الفئة
+            لا يوجد وافدين في هذه الفئة
           </div>
         ) : (
           <div className="grid gap-4">
@@ -108,15 +137,9 @@ const RiskApplicants = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          isHighRisk ? "bg-red-500/10" : "bg-green-500/10"
-                        }`}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center ${getColorClasses("bg")}`}
                       >
-                        {isHighRisk ? (
-                          <AlertTriangle className="w-5 h-5 text-red-500" />
-                        ) : (
-                          <Shield className="w-5 h-5 text-green-500" />
-                        )}
+                        <config.Icon className={`w-5 h-5 ${getColorClasses("text")}`} />
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground">
@@ -129,8 +152,8 @@ const RiskApplicants = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <Badge
-                        variant={isHighRisk ? "destructive" : "secondary"}
-                        className={!isHighRisk ? "bg-green-500/10 text-green-600" : ""}
+                        variant="secondary"
+                        className={getColorClasses("badge")}
                       >
                         درجة الخطورة: {applicant.risk_score}%
                       </Badge>

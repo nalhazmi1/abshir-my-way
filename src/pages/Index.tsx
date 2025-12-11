@@ -154,13 +154,13 @@ const Index = () => {
     return matchesSearch && matchesVisaType && matchesNationality;
   });
 
-  const analyzedApplicants = applications.filter(a => a.risk_score !== null);
-  const highRiskCount = analyzedApplicants.filter(a => a.risk_score! >= 60).length;
-  const lowRiskCount = analyzedApplicants.filter(a => a.risk_score! < 60).length;
-  const notAnalyzedCount = applications.filter(a => a.risk_score === null).length;
+  const highRiskCount = applications.filter(a => a.risk_score !== null && a.risk_score >= 70).length;
+  const mediumRiskCount = applications.filter(a => a.risk_score !== null && a.risk_score >= 40 && a.risk_score < 70).length;
+  const lowRiskCount = applications.filter(a => a.risk_score !== null && a.risk_score < 40).length;
 
   const stats = [
     { label: "مخاطر منخفضة", value: lowRiskCount.toString(), color: "bg-green-500", route: "/risk-applicants/low" },
+    { label: "مخاطر متوسطة", value: mediumRiskCount.toString(), color: "bg-yellow-500", route: "/risk-applicants/medium" },
     { label: "مخاطر عالية", value: highRiskCount.toString(), color: "bg-red-500", route: "/risk-applicants/high" },
   ];
 
@@ -180,7 +180,7 @@ const Index = () => {
 
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
           {stats.map((stat, index) => (
             <Card 
               key={index} 
