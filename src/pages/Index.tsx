@@ -3,6 +3,7 @@ import { ChevronDown, Search, Filter, Download } from "lucide-react";
 import Header from "@/components/Header";
 import VisaApplicationCard from "@/components/VisaApplicationCard";
 import FloatingButtons from "@/components/FloatingButtons";
+import HighRiskNotifications from "@/components/HighRiskNotifications";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -161,6 +162,9 @@ const Index = () => {
             تحليل المخاطر
           </h1>
         </div>
+
+        {/* High Risk Notifications */}
+        <HighRiskNotifications applicants={applications} />
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
