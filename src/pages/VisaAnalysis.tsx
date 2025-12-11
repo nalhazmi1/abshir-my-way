@@ -107,53 +107,8 @@ const VisaAnalysis = () => {
       
       if (applicant) {
         setApplicantData(applicant);
-        
-        // Load saved AI analysis if exists
-        if (applicant.risk_analysis) {
-          try {
-            const savedAnalysis = JSON.parse(applicant.risk_analysis);
-            if (savedAnalysis.risk_score !== undefined) {
-              setAiAnalysis(savedAnalysis);
-            } else if (applicant.risk_score !== null) {
-              // Use existing risk score from data
-              setAiAnalysis({
-                risk_score: applicant.risk_score,
-                risk_level: applicant.risk_score >= 60 ? "مرتفع" : "منخفض",
-                analysis: "",
-                factors: [],
-                recommendation: ""
-              });
-            } else {
-              // No valid analysis and no risk score, run automatically
-              analyzeRisk(applicant);
-            }
-          } catch {
-            // If not JSON and has risk_score, use it
-            if (applicant.risk_score !== null) {
-              setAiAnalysis({
-                risk_score: applicant.risk_score,
-                risk_level: applicant.risk_score >= 60 ? "مرتفع" : "منخفض",
-                analysis: "",
-                factors: [],
-                recommendation: ""
-              });
-            } else {
-              analyzeRisk(applicant);
-            }
-          }
-        } else if (applicant.risk_score !== null) {
-          // No analysis text but has risk_score, use it without running AI
-          setAiAnalysis({
-            risk_score: applicant.risk_score,
-            risk_level: applicant.risk_score >= 60 ? "مرتفع" : "منخفض",
-            analysis: "",
-            factors: [],
-            recommendation: ""
-          });
-        } else {
-          // No existing analysis and no risk score, run automatically
-          analyzeRisk(applicant);
-        }
+        // Always run AI analysis automatically
+        analyzeRisk(applicant);
       }
     } catch (error) {
       console.error("Error fetching applicant:", error);
