@@ -174,7 +174,7 @@ const Index = () => {
         {/* Page Title */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground">
-            تحليل المخاطر
+            لوحة تقييم مخاطر العمل غير النظامي
           </h1>
         </div>
 
