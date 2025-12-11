@@ -27,9 +27,9 @@ const Header = () => {
                 الرئيسية
               </Button>
             </Link>
-            <Link to="/visa-analysis">
+            <Link to="/">
               <Button variant="ghost" className="text-foreground hover:text-primary">
-                تحليل التأشيرات
+                تحليل المخاطر
               </Button>
             </Link>
             <Button variant="ghost" className="text-foreground hover:text-primary">

@@ -42,7 +42,7 @@ const VisaApplicationCard = ({
   };
 
   return (
-    <Link to="/visa-analysis" className="block">
+    <Link to={`/visa-analysis/${id}`} className="block">
       <Card className="hover:shadow-lg transition-all duration-300 hover:border-saudi-green cursor-pointer">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
