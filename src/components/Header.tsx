@@ -1,8 +1,11 @@
-import { Search, Globe } from "lucide-react";
+import { Search, Globe, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
+  const { signOut } = useAuth();
+
   return (
     <header className="bg-card border-b border-border">
       <div className="container mx-auto px-4 py-4">
@@ -53,6 +56,14 @@ const Header = () => {
             </Button>
             <Button variant="ghost" size="icon">
               <Search className="w-5 h-5" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+              onClick={signOut}
+            >
+              <LogOut className="w-4 h-4 ml-2" />
+              تسجيل الخروج
             </Button>
           </nav>
 
