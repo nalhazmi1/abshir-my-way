@@ -26,7 +26,7 @@ interface VisaApplicant {
 }
 
 const Index = () => {
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [selectedVisaType, setSelectedVisaType] = useState<string>("");
   const [selectedNationality, setSelectedNationality] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [applications, setApplications] = useState<VisaApplicant[]>([]);
@@ -161,16 +161,17 @@ const Index = () => {
               />
             </div>
 
-            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+            <Select value={selectedVisaType} onValueChange={setSelectedVisaType}>
               <SelectTrigger className="w-full bg-card">
-                <SelectValue placeholder="حالة الطلب" />
+                <SelectValue placeholder="نوع التأشيرة" />
                 <ChevronDown className="mr-2 h-4 w-4" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع الحالات</SelectItem>
-                <SelectItem value="pending">قيد المراجعة</SelectItem>
-                <SelectItem value="low-risk">مخاطر منخفضة</SelectItem>
-                <SelectItem value="high-risk">مخاطر عالية</SelectItem>
+                <SelectItem value="all">جميع الأنواع</SelectItem>
+                <SelectItem value="عمل">عمل</SelectItem>
+                <SelectItem value="سياحة">سياحة</SelectItem>
+                <SelectItem value="زيارة">زيارة</SelectItem>
+                <SelectItem value="حج وعمرة">حج وعمرة</SelectItem>
               </SelectContent>
             </Select>
 
