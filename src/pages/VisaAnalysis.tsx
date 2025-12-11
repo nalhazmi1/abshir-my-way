@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CheckCircle, AlertTriangle, User, Calendar, MapPin, Phone, Mail, Shield, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,11 +8,18 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 
-const VisaAnalysis = () => {
-  const [riskLevel, setRiskLevel] = useState<"low" | "high">("low");
-  const { toast } = useToast();
-
-  const applicantData = {
+const applicantsData: Record<string, {
+  name: string;
+  nationality: string;
+  passportNumber: string;
+  purpose: string;
+  duration: string;
+  previousVisits: number;
+  phone: string;
+  email: string;
+  status: "low" | "high";
+}> = {
+  "VSA-2024-1234": {
     name: "محمد أحمد",
     nationality: "مصري",
     passportNumber: "A12345678",
@@ -20,8 +27,85 @@ const VisaAnalysis = () => {
     duration: "90 يوم",
     previousVisits: 3,
     phone: "+20 123 456 7890",
-    email: "mohamed.ahmed@email.com"
-  };
+    email: "mohamed.ahmed@email.com",
+    status: "low"
+  },
+  "VSA-2024-1235": {
+    name: "فاطمة علي",
+    nationality: "سوري",
+    passportNumber: "B23456789",
+    purpose: "سياحة",
+    duration: "30 يوم",
+    previousVisits: 0,
+    phone: "+963 912 345 678",
+    email: "fatima.ali@email.com",
+    status: "low"
+  },
+  "VSA-2024-1236": {
+    name: "أحمد حسن",
+    nationality: "يمني",
+    passportNumber: "C34567890",
+    purpose: "عمرة",
+    duration: "14 يوم",
+    previousVisits: 5,
+    phone: "+967 771 234 567",
+    email: "ahmed.hassan@email.com",
+    status: "low"
+  },
+  "VSA-2024-1237": {
+    name: "خالد محمود",
+    nationality: "لبناني",
+    passportNumber: "D45678901",
+    purpose: "عمل",
+    duration: "180 يوم",
+    previousVisits: 1,
+    phone: "+961 3 456 789",
+    email: "khaled.mahmoud@email.com",
+    status: "high"
+  },
+  "VSA-2024-1238": {
+    name: "مريم سعيد",
+    nationality: "أردني",
+    passportNumber: "E56789012",
+    purpose: "زيارة عائلية",
+    duration: "60 يوم",
+    previousVisits: 2,
+    phone: "+962 79 123 4567",
+    email: "maryam.saeed@email.com",
+    status: "low"
+  },
+  "VSA-2024-1239": {
+    name: "سعيد عبدالله",
+    nationality: "مغربي",
+    passportNumber: "F67890123",
+    purpose: "استثمار",
+    duration: "365 يوم",
+    previousVisits: 4,
+    phone: "+212 6 12 34 56 78",
+    email: "saeed.abdullah@email.com",
+    status: "low"
+  }
+};
+
+const VisaAnalysis = () => {
+  const { id } = useParams<{ id: string }>();
+  const applicantData = id ? applicantsData[id] : null;
+  const [riskLevel, setRiskLevel] = useState<"low" | "high">(applicantData?.status || "low");
+  const { toast } = useToast();
+
+  if (!applicantData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">لم يتم العثور على الطلب</h1>
+          <Link to="/">
+            <Button>العودة للصفحة الرئيسية</Button>
+          </Link>
+        </main>
+      </div>
+    );
+  }
 
   const analysisMetrics = [
     { label: "تحليل السلوك", score: 92, status: "آمن" },
@@ -63,7 +147,7 @@ const VisaAnalysis = () => {
           </div>
           <div className="flex gap-2">
             <Badge variant="outline" className="text-sm">
-              رقم الطلب: VSA-2024-1234
+              رقم الطلب: {id}
             </Badge>
           </div>
         </div>
