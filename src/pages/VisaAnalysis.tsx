@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,6 +46,73 @@ interface AIAnalysis {
   recommendation: string;
 }
 
+const parseCSV = (csvText: string): ApplicantData[] => {
+  const lines = csvText.trim().split("\n");
+  const headers = lines[0].split(",");
+  
+  return lines.slice(1).map(line => {
+    const values: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === "," && !inQuotes) {
+        values.push(current);
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+    values.push(current);
+    
+    const row: Record<string, string> = {};
+    headers.forEach((header, index) => {
+      row[header] = values[index] || "";
+    });
+
+    let violations: Violation[] = [];
+    try {
+      if (row.violations && row.violations !== "[]") {
+        violations = JSON.parse(row.violations);
+      }
+    } catch {
+      violations = [];
+    }
+
+    let riskAnalysis: string | null = null;
+    if (row.risk_analysis) {
+      riskAnalysis = row.risk_analysis;
+    }
+    
+    return {
+      id: row.id,
+      full_name: row.full_name,
+      nationality: row.nationality,
+      passport_number: row.passport_number,
+      birth_date: row.birth_date,
+      gender: row.gender,
+      visa_type: row.visa_type,
+      entry_date: row.entry_date,
+      exit_date: row.exit_date,
+      sponsor: row.sponsor,
+      profession: row.profession,
+      employer: row.employer || null,
+      work_experience_years: parseInt(row.work_experience_years) || 0,
+      monthly_salary: row.monthly_salary ? parseInt(row.monthly_salary) : null,
+      has_violations: row.has_violations === "true",
+      violations,
+      education_level: row.education_level,
+      previous_visits: parseInt(row.previous_visits) || 0,
+      risk_score: row.risk_score ? parseInt(row.risk_score) : null,
+      risk_analysis: riskAnalysis,
+      status: row.status || "pending",
+    };
+  });
+};
+
 const VisaAnalysis = () => {
   const { id } = useParams<{ id: string }>();
   const [applicantData, setApplicantData] = useState<ApplicantData | null>(null);
@@ -62,31 +128,29 @@ const VisaAnalysis = () => {
   }, [id]);
 
   const fetchApplicant = async () => {
-    const { data, error } = await supabase
-      .from("visa_applicants")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Error fetching applicant:", error);
-    } else if (data) {
-      const violations = Array.isArray(data.violations) 
-        ? (data.violations as unknown as Violation[])
-        : [];
-      setApplicantData({ ...data, violations });
+    try {
+      const response = await fetch("/data/visa_applicants.csv");
+      const csvText = await response.text();
+      const applicants = parseCSV(csvText);
+      const applicant = applicants.find(a => a.id === id);
       
-      // Load saved AI analysis if exists
-      if (data.risk_analysis) {
-        try {
-          const savedAnalysis = JSON.parse(data.risk_analysis);
-          if (savedAnalysis.risk_score !== undefined) {
-            setAiAnalysis(savedAnalysis);
+      if (applicant) {
+        setApplicantData(applicant);
+        
+        // Load saved AI analysis if exists
+        if (applicant.risk_analysis) {
+          try {
+            const savedAnalysis = JSON.parse(applicant.risk_analysis);
+            if (savedAnalysis.risk_score !== undefined) {
+              setAiAnalysis(savedAnalysis);
+            }
+          } catch {
+            // If not JSON, it's just text analysis from before
           }
-        } catch {
-          // If not JSON, it's just text analysis from before
         }
       }
+    } catch (error) {
+      console.error("Error fetching applicant:", error);
     }
     setLoading(false);
   };
@@ -105,15 +169,6 @@ const VisaAnalysis = () => {
       }
 
       setAiAnalysis(data);
-
-      // Update the database with the full AI analysis
-      await supabase
-        .from("visa_applicants")
-        .update({
-          risk_score: data.risk_score,
-          risk_analysis: JSON.stringify(data),
-        })
-        .eq("id", id);
 
       toast({
         title: "تم التحليل بنجاح",
