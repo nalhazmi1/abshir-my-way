@@ -100,31 +100,22 @@ const RiskCharts = ({ applicants }: RiskChartsProps) => {
         </CardHeader>
         <CardContent>
           {nationalityChartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={nationalityChartData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  width={120}
-                  tick={{ fontSize: 14, fill: "hsl(var(--foreground))", fontWeight: 500 }}
-                  tickLine={{ stroke: "hsl(var(--border))" }}
-                  axisLine={{ stroke: "hsl(var(--border))" }}
-                />
-                <Tooltip
-                  formatter={(value: number) => [`${value} متقدم`, "العدد"]}
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]}>
-                  <LabelList dataKey="value" position="right" fill="hsl(var(--foreground))" fontSize={12} fontWeight={600} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="space-y-3">
+              {nationalityChartData.map((item, index) => (
+                <div key={item.name} className="space-y-1">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-medium">{item.name}</span>
+                    <span className="text-muted-foreground">{item.value} وافد</span>
+                  </div>
+                  <div className="h-3 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-destructive rounded-full transition-all"
+                      style={{ width: `${(item.value / Math.max(...nationalityChartData.map(d => d.value))) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="h-[250px] flex items-center justify-center text-muted-foreground">
               لا توجد بيانات
