@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 interface VisaApplicant {
@@ -27,6 +26,46 @@ interface VisaApplicant {
   risk_score: number | null;
 }
 
+const parseCSV = (csvText: string): VisaApplicant[] => {
+  const lines = csvText.trim().split("\n");
+  const headers = lines[0].split(",");
+  
+  return lines.slice(1).map(line => {
+    const values: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === "," && !inQuotes) {
+        values.push(current);
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+    values.push(current);
+    
+    const row: Record<string, string> = {};
+    headers.forEach((header, index) => {
+      row[header] = values[index] || "";
+    });
+    
+    return {
+      id: row.id,
+      full_name: row.full_name,
+      nationality: row.nationality,
+      passport_number: row.passport_number,
+      visa_type: row.visa_type,
+      status: row.status || "pending",
+      created_at: new Date().toISOString(),
+      risk_score: row.risk_score ? parseInt(row.risk_score) : null,
+    };
+  });
+};
+
 const Index = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [selectedNationality, setSelectedNationality] = useState<string>("");
@@ -39,15 +78,18 @@ const Index = () => {
   }, []);
 
   const fetchApplications = async () => {
-    const { data, error } = await supabase
-      .from("visa_applicants")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      const response = await fetch("/data/visa_applicants.csv");
+      const csvText = await response.text();
+      const data = parseCSV(csvText);
+      setApplications(data);
+    } catch (error) {
       console.error("Error fetching applications:", error);
-    } else {
-      setApplications(data || []);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحميل البيانات",
+        variant: "destructive",
+      });
     }
     setLoading(false);
   };
@@ -58,22 +100,8 @@ const Index = () => {
     return "low-risk";
   };
 
-  const exportToCSV = async () => {
-    const { data, error } = await supabase
-      .from("visa_applicants")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      toast({
-        title: "خطأ",
-        description: "فشل في تصدير البيانات",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!data || data.length === 0) {
+  const exportToCSV = () => {
+    if (applications.length === 0) {
       toast({
         title: "تنبيه",
         description: "لا توجد بيانات للتصدير",
@@ -90,23 +118,11 @@ const Index = () => {
       "نوع التأشيرة",
       "الحالة",
       "درجة المخاطرة",
-      "المهنة",
-      "جهة العمل",
-      "تاريخ الدخول",
-      "تاريخ الخروج",
-      "الكفيل",
-      "تاريخ الميلاد",
-      "الجنس",
-      "المستوى التعليمي",
-      "الراتب الشهري",
-      "سنوات الخبرة",
-      "الزيارات السابقة",
-      "وجود مخالفات"
     ];
 
     const csvContent = [
       headers.join(","),
-      ...data.map(row => [
+      ...applications.map(row => [
         row.id,
         row.full_name,
         row.nationality,
@@ -114,18 +130,6 @@ const Index = () => {
         row.visa_type,
         row.status,
         row.risk_score || "",
-        row.profession,
-        row.employer || "",
-        row.entry_date,
-        row.exit_date,
-        row.sponsor,
-        row.birth_date,
-        row.gender,
-        row.education_level || "",
-        row.monthly_salary || "",
-        row.work_experience_years || "",
-        row.previous_visits || "",
-        row.has_violations ? "نعم" : "لا"
       ].map(cell => `"${cell}"`).join(","))
     ].join("\n");
 
