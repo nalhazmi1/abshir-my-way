@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { CheckCircle, AlertTriangle, User, Calendar, MapPin, Phone, Mail, Shield } from "lucide-react";
+import { CheckCircle, AlertTriangle, User, Calendar, MapPin, Phone, Mail, Shield, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,7 +52,15 @@ const VisaAnalysis = () => {
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-foreground">تحليل طلب التأشيرة</h1>
+          <div className="flex items-center gap-4">
+            <Link to="/">
+              <Button variant="outline" className="flex items-center gap-2">
+                <ArrowRight className="w-4 h-4" />
+                رجوع
+              </Button>
+            </Link>
+            <h1 className="text-3xl font-bold text-foreground">تحليل طلب التأشيرة</h1>
+          </div>
           <div className="flex gap-2">
             <Badge variant="outline" className="text-sm">
               رقم الطلب: VSA-2024-1234
