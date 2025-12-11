@@ -102,7 +102,7 @@ const Index = () => {
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <Input
                 type="text"
-                placeholder="البحث عن طلب (الاسم، رقم الجواز، رقم الطلب)"
+                placeholder="البحث عن الاسم، رقم الإقامة، التأشيرة"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pr-10 bg-card"
