@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, Search, Filter } from "lucide-react";
+import { ChevronDown, Search, Filter, Download } from "lucide-react";
 import Header from "@/components/Header";
 import VisaApplicationCard from "@/components/VisaApplicationCard";
 import FloatingButtons from "@/components/FloatingButtons";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface VisaApplicant {
   id: string;
@@ -55,6 +56,95 @@ const Index = () => {
     if (status === "pending" || riskScore === null) return "pending";
     if (riskScore >= 60) return "high-risk";
     return "low-risk";
+  };
+
+  const exportToCSV = async () => {
+    const { data, error } = await supabase
+      .from("visa_applicants")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast({
+        title: "خطأ",
+        description: "فشل في تصدير البيانات",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      toast({
+        title: "تنبيه",
+        description: "لا توجد بيانات للتصدير",
+      });
+      return;
+    }
+
+    // CSV Headers in Arabic
+    const headers = [
+      "رقم الطلب",
+      "الاسم الكامل",
+      "الجنسية",
+      "رقم الجواز",
+      "نوع التأشيرة",
+      "الحالة",
+      "درجة المخاطرة",
+      "المهنة",
+      "جهة العمل",
+      "تاريخ الدخول",
+      "تاريخ الخروج",
+      "الكفيل",
+      "تاريخ الميلاد",
+      "الجنس",
+      "المستوى التعليمي",
+      "الراتب الشهري",
+      "سنوات الخبرة",
+      "الزيارات السابقة",
+      "وجود مخالفات"
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...data.map(row => [
+        row.id,
+        row.full_name,
+        row.nationality,
+        row.passport_number,
+        row.visa_type,
+        row.status,
+        row.risk_score || "",
+        row.profession,
+        row.employer || "",
+        row.entry_date,
+        row.exit_date,
+        row.sponsor,
+        row.birth_date,
+        row.gender,
+        row.education_level || "",
+        row.monthly_salary || "",
+        row.work_experience_years || "",
+        row.previous_visits || "",
+        row.has_violations ? "نعم" : "لا"
+      ].map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    // Add BOM for Excel Arabic support
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `visa_applicants_${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "تم التصدير",
+      description: "تم تصدير البيانات بنجاح",
+    });
   };
 
   const stats = [
@@ -146,10 +236,16 @@ const Index = () => {
             <p className="text-sm text-muted-foreground">
               عرض {applications.length} من أصل {applications.length} طلب
             </p>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Filter className="w-4 h-4" />
-              فلاتر متقدمة
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="gap-2" onClick={exportToCSV}>
+                <Download className="w-4 h-4" />
+                تصدير Excel
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Filter className="w-4 h-4" />
+                فلاتر متقدمة
+              </Button>
+            </div>
           </div>
         </div>
 
