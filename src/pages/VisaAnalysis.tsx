@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, AlertTriangle, User, Calendar, Shield, ArrowRight, Briefcase, GraduationCap, Loader2, FileText } from "lucide-react";
+import { CheckCircle, AlertTriangle, User, Calendar, Shield, ArrowRight, Briefcase, GraduationCap, Loader2, FileText, Save } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -442,6 +442,12 @@ const VisaAnalysis = () => {
                 placeholder="أضف ملاحظاتك هنا..."
                 className="min-h-[100px] bg-background"
               />
+            </div>
+            <div className="flex justify-end">
+              <Button className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                حفظ
+              </Button>
             </div>
           </CardContent>
         </Card>
