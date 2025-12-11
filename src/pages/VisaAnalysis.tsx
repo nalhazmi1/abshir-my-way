@@ -187,7 +187,7 @@ const VisaAnalysis = () => {
             <h1 className="text-3xl font-bold text-foreground">تحليل المخاطر</h1>
           </div>
           <Badge variant="outline" className="text-sm">
-            رقم الطلب: {id}
+            رقم التأشيرة: {id}
           </Badge>
         </div>
 
