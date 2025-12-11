@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronDown, Search, Filter, Download } from "lucide-react";
 import Header from "@/components/Header";
 import VisaApplicationCard from "@/components/VisaApplicationCard";
@@ -26,6 +27,7 @@ interface VisaApplicant {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
   const [selectedVisaType, setSelectedVisaType] = useState<string>("");
   const [selectedNationality, setSelectedNationality] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -144,8 +146,8 @@ const Index = () => {
   });
 
   const stats = [
-    { label: "مخاطر منخفضة", value: applications.filter(a => a.risk_score !== null && a.risk_score < 60).length.toString(), color: "bg-green-500" },
-    { label: "مخاطر عالية", value: applications.filter(a => a.risk_score !== null && a.risk_score >= 60).length.toString(), color: "bg-red-500" },
+    { label: "مخاطر منخفضة", value: applications.filter(a => a.risk_score !== null && a.risk_score < 60).length.toString(), color: "bg-green-500", route: "/risk-applicants/low" },
+    { label: "مخاطر عالية", value: applications.filter(a => a.risk_score !== null && a.risk_score >= 60).length.toString(), color: "bg-red-500", route: "/risk-applicants/high" },
   ];
 
   return (
@@ -163,7 +165,11 @@ const Index = () => {
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           {stats.map((stat, index) => (
-            <Card key={index} className="overflow-hidden">
+            <Card 
+              key={index} 
+              className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => navigate(stat.route)}
+            >
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
                   <div className={`w-2 h-16 rounded-full ${stat.color}`}></div>

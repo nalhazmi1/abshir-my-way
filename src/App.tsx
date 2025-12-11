@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import VisaAnalysis from "./pages/VisaAnalysis";
+import RiskApplicants from "./pages/RiskApplicants";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -27,6 +28,11 @@ const App = () => (
           <Route path="/visa-analysis/:id" element={
             <ProtectedRoute>
               <VisaAnalysis />
+            </ProtectedRoute>
+          } />
+          <Route path="/risk-applicants/:level" element={
+            <ProtectedRoute>
+              <RiskApplicants />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
