@@ -71,40 +71,11 @@ const VisaAnalysis = () => {
     }
   }, [id]);
 
-  const fetchApplicant = async () => {
-    try {
-      const response = await fetch("/data/visa_applicants.json");
-      const applicants: ApplicantData[] = await response.json();
-      const applicant = applicants.find(a => a.id === id);
-      
-      if (applicant) {
-        setApplicantData(applicant);
-        
-        // Load saved AI analysis if exists
-        if (applicant.risk_analysis) {
-          try {
-            const savedAnalysis = JSON.parse(applicant.risk_analysis);
-            if (savedAnalysis.risk_score !== undefined) {
-              setAiAnalysis(savedAnalysis);
-            }
-          } catch {
-            // If not JSON, it's just text analysis from before
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching applicant:", error);
-    }
-    setLoading(false);
-  };
-
-  const analyzeRisk = async () => {
-    if (!applicantData) return;
-    
+  const analyzeRisk = async (applicant: ApplicantData) => {
     setAnalyzing(true);
     try {
       const { data, error } = await supabase.functions.invoke("analyze-risk", {
-        body: { applicant: applicantData },
+        body: { applicant },
       });
 
       if (error) {
@@ -126,6 +97,40 @@ const VisaAnalysis = () => {
       });
     }
     setAnalyzing(false);
+  };
+
+  const fetchApplicant = async () => {
+    try {
+      const response = await fetch("/data/visa_applicants.json");
+      const applicants: ApplicantData[] = await response.json();
+      const applicant = applicants.find(a => a.id === id);
+      
+      if (applicant) {
+        setApplicantData(applicant);
+        
+        // Load saved AI analysis if exists
+        if (applicant.risk_analysis) {
+          try {
+            const savedAnalysis = JSON.parse(applicant.risk_analysis);
+            if (savedAnalysis.risk_score !== undefined) {
+              setAiAnalysis(savedAnalysis);
+            } else {
+              // No valid analysis, run automatically
+              analyzeRisk(applicant);
+            }
+          } catch {
+            // If not JSON, run analysis automatically
+            analyzeRisk(applicant);
+          }
+        } else {
+          // No existing analysis, run automatically
+          analyzeRisk(applicant);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching applicant:", error);
+    }
+    setLoading(false);
   };
 
 
@@ -287,34 +292,21 @@ const VisaAnalysis = () => {
 
           {/* Left Side - Analysis Dashboard */}
           <div className="lg:col-span-2 space-y-4">
-            {/* AI Analysis Button */}
-            {!aiAnalysis && !applicantData.risk_analysis && (
+            {/* AI Analysis Loading */}
+            {analyzing && !aiAnalysis && (
               <Card className="border-2 border-dashed border-primary/30">
                 <CardContent className="p-8 text-center">
-                  <Shield className="w-16 h-16 mx-auto text-primary/50 mb-4" />
-                  <h3 className="text-xl font-bold mb-2">تحليل المخاطر بالذكاء الاصطناعي</h3>
-                  <p className="text-muted-foreground mb-6">
-                    اضغط لتحليل بيانات الوافد والتنبؤ بدرجة الخطورة
+                  <Loader2 className="w-16 h-16 mx-auto text-primary/50 mb-4 animate-spin" />
+                  <h3 className="text-xl font-bold mb-2">جاري تحليل المخاطر...</h3>
+                  <p className="text-muted-foreground">
+                    يتم الآن تحليل بيانات الوافد بالذكاء الاصطناعي
                   </p>
-                  <Button onClick={analyzeRisk} disabled={analyzing} size="lg">
-                    {analyzing ? (
-                      <>
-                        <Loader2 className="w-5 h-5 ml-2 animate-spin" />
-                        جاري التحليل...
-                      </>
-                    ) : (
-                      <>
-                        <Shield className="w-5 h-5 ml-2" />
-                        بدء التحليل
-                      </>
-                    )}
-                  </Button>
                 </CardContent>
               </Card>
             )}
 
             {/* AI Prediction Card */}
-            {(aiAnalysis || applicantData.risk_analysis) && (
+            {aiAnalysis && (
               <Card className="border-2 border-primary/20">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
@@ -324,7 +316,7 @@ const VisaAnalysis = () => {
                       </div>
                       التحليل التنبؤي بالذكاء الاصطناعي
                     </span>
-                    <Button variant="ghost" size="sm" onClick={analyzeRisk} disabled={analyzing}>
+                    <Button variant="ghost" size="sm" onClick={() => applicantData && analyzeRisk(applicantData)} disabled={analyzing}>
                       {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : "إعادة التحليل"}
                     </Button>
                   </CardTitle>
@@ -367,11 +359,11 @@ const VisaAnalysis = () => {
                     )}
                   </div>
 
-                  {(aiAnalysis?.analysis || applicantData.risk_analysis) && (
+                  {aiAnalysis?.analysis && (
                     <div className="mt-6 p-4 rounded-lg bg-muted">
                       <h4 className="font-semibold mb-2">التحليل المفصل:</h4>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        {aiAnalysis?.analysis || applicantData.risk_analysis}
+                        {aiAnalysis.analysis}
                       </p>
                     </div>
                   )}
