@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, AlertTriangle, User, Calendar, Shield, ArrowRight, Briefcase, GraduationCap, Loader2 } from "lucide-react";
+import { CheckCircle, AlertTriangle, User, Calendar, Shield, ArrowRight, Briefcase, GraduationCap, Loader2, FileText } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -61,6 +62,7 @@ const VisaAnalysis = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<string>("not_started");
+  const [notes, setNotes] = useState<string>("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -171,24 +173,9 @@ const VisaAnalysis = () => {
             </Link>
             <h1 className="text-3xl font-bold text-foreground">تحليل المخاطر</h1>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">حالة التحقق:</span>
-              <Select value={verificationStatus} onValueChange={setVerificationStatus}>
-                <SelectTrigger className="w-[180px] bg-background">
-                  <SelectValue placeholder="حالة التحقق" />
-                </SelectTrigger>
-                <SelectContent className="bg-background">
-                  <SelectItem value="not_started">لم يبدأ</SelectItem>
-                  <SelectItem value="in_progress">جاري التحقق</SelectItem>
-                  <SelectItem value="verified">تم التحقق</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Badge variant="outline" className="text-sm">
-              رقم التأشيرة: {id}
-            </Badge>
-          </div>
+          <Badge variant="outline" className="text-sm">
+            رقم التأشيرة: {id}
+          </Badge>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -424,6 +411,40 @@ const VisaAnalysis = () => {
 
           </div>
         </div>
+
+        {/* Verification Status and Notes Section */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              حالة التحقق والملاحظات
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-muted-foreground">حالة التحقق:</span>
+              <Select value={verificationStatus} onValueChange={setVerificationStatus}>
+                <SelectTrigger className="w-[200px] bg-background">
+                  <SelectValue placeholder="اختر حالة التحقق" />
+                </SelectTrigger>
+                <SelectContent className="bg-background">
+                  <SelectItem value="not_started">لم يبدأ</SelectItem>
+                  <SelectItem value="in_progress">جاري التحقق</SelectItem>
+                  <SelectItem value="verified">تم التحقق</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-muted-foreground">الملاحظات:</span>
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="أضف ملاحظاتك هنا..."
+                className="min-h-[100px] bg-background"
+              />
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
