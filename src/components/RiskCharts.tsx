@@ -87,12 +87,14 @@ const RiskCharts = ({ applicants }: RiskChartsProps) => {
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={nationalityChartData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" />
+                <XAxis type="number" tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} />
                 <YAxis
                   dataKey="name"
                   type="category"
-                  width={80}
-                  tick={{ fontSize: 12 }}
+                  width={100}
+                  tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }}
+                  tickLine={{ stroke: "hsl(var(--border))" }}
+                  axisLine={{ stroke: "hsl(var(--border))" }}
                 />
                 <Tooltip
                   formatter={(value: number) => [`${value} متقدم`, "العدد"]}
@@ -170,8 +172,13 @@ const RiskCharts = ({ applicants }: RiskChartsProps) => {
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={avgRiskChartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis domain={[0, 100]} />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} />
+                <YAxis 
+                  domain={[0, 100]} 
+                  tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }}
+                  tickLine={{ stroke: "hsl(var(--border))" }}
+                  axisLine={{ stroke: "hsl(var(--border))" }}
+                />
                 <Tooltip
                   formatter={(value: number) => [`${value}%`, "متوسط الخطورة"]}
                   contentStyle={{
