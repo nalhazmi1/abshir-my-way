@@ -81,7 +81,6 @@ const Index = () => {
       "سنوات الخبرة",
       "عدد الزيارات السابقة",
       "يوجد مخالفات",
-      "الحالة",
       "درجة المخاطرة",
     ];
 
@@ -105,7 +104,6 @@ const Index = () => {
         row.work_experience_years || "",
         row.previous_visits || 1,
         row.has_violations ? "نعم" : "لا",
-        row.status,
         row.risk_score || "",
       ].map(cell => `"${cell}"`).join(","))
     ].join("\n");
