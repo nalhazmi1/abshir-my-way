@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { MapPin, AlertTriangle, Shield } from "lucide-react";
+import { MapPin, AlertTriangle, Shield, AlertCircle } from "lucide-react";
 
 
 interface VisaApplicationCardProps {
@@ -21,8 +21,18 @@ const VisaApplicationCard = ({
   passportNumber,
   riskScore,
 }: VisaApplicationCardProps) => {
-  const isHighRisk = riskScore !== null && riskScore !== undefined && riskScore >= 60;
+  const isHighRisk = riskScore !== null && riskScore !== undefined && riskScore >= 70;
+  const isMediumRisk = riskScore !== null && riskScore !== undefined && riskScore >= 40 && riskScore < 70;
+  const isLowRisk = riskScore !== null && riskScore !== undefined && riskScore < 40;
   const hasRiskScore = riskScore !== null && riskScore !== undefined;
+
+  const getRiskStyle = () => {
+    if (isHighRisk) return { bg: "bg-red-500/10", text: "text-red-500", Icon: AlertTriangle };
+    if (isMediumRisk) return { bg: "bg-yellow-500/10", text: "text-yellow-600", Icon: AlertCircle };
+    return { bg: "bg-green-500/10", text: "text-green-500", Icon: Shield };
+  };
+
+  const riskStyle = getRiskStyle();
 
   return (
     <Link to={`/visa-analysis/${id}`} className="block">
@@ -39,13 +49,9 @@ const VisaApplicationCard = ({
               </div>
             </div>
             {hasRiskScore ? (
-              <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${isHighRisk ? "bg-red-500/10" : "bg-green-500/10"}`}>
-                {isHighRisk ? (
-                  <AlertTriangle className="w-4 h-4 text-red-500" />
-                ) : (
-                  <Shield className="w-4 h-4 text-green-500" />
-                )}
-                <span className={`text-sm font-bold ${isHighRisk ? "text-red-500" : "text-green-500"}`}>
+              <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${riskStyle.bg}`}>
+                <riskStyle.Icon className={`w-4 h-4 ${riskStyle.text}`} />
+                <span className={`text-sm font-bold ${riskStyle.text}`}>
                   {riskScore}%
                 </span>
               </div>
