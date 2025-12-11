@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, Search, Filter, Download } from "lucide-react";
+import { ChevronDown, Search, Filter, Download, Sparkles, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import VisaApplicationCard from "@/components/VisaApplicationCard";
 import FloatingButtons from "@/components/FloatingButtons";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VisaApplicant {
   id: string;
@@ -25,6 +26,13 @@ interface VisaApplicant {
   visa_type: string;
   status: string;
   risk_score: number | null;
+  profession?: string;
+  employer?: string;
+  has_violations?: boolean;
+  violations?: any;
+  monthly_salary?: number;
+  work_experience_years?: number;
+  previous_visits?: number;
 }
 
 const Index = () => {
@@ -34,6 +42,8 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [applications, setApplications] = useState<VisaApplicant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzingProgress, setAnalyzingProgress] = useState(0);
 
   useEffect(() => {
     fetchApplications();
@@ -53,6 +63,64 @@ const Index = () => {
       });
     }
     setLoading(false);
+  };
+
+  const analyzeAllApplicants = async () => {
+    const notAnalyzed = applications.filter(a => a.risk_score === null);
+    if (notAnalyzed.length === 0) {
+      toast({
+        title: "تنبيه",
+        description: "تم تحليل جميع الوافدين مسبقاً",
+      });
+      return;
+    }
+
+    setAnalyzing(true);
+    setAnalyzingProgress(0);
+
+    const updatedApplications = [...applications];
+    
+    for (let i = 0; i < notAnalyzed.length; i++) {
+      const applicant = notAnalyzed[i];
+      try {
+        const { data, error } = await supabase.functions.invoke('analyze-risk', {
+          body: {
+            applicantData: {
+              profession: applicant.profession || 'غير محدد',
+              employer: applicant.employer || 'غير محدد',
+              has_violations: applicant.has_violations || false,
+              violations: applicant.violations || [],
+              monthly_salary: applicant.monthly_salary || 0,
+              work_experience_years: applicant.work_experience_years || 0,
+              previous_visits: applicant.previous_visits || 0,
+              nationality: applicant.nationality,
+              visa_type: applicant.visa_type,
+            }
+          }
+        });
+
+        if (!error && data) {
+          const index = updatedApplications.findIndex(a => a.id === applicant.id);
+          if (index !== -1) {
+            updatedApplications[index] = {
+              ...updatedApplications[index],
+              risk_score: data.riskScore
+            };
+          }
+        }
+      } catch (error) {
+        console.error(`Error analyzing applicant ${applicant.id}:`, error);
+      }
+      
+      setAnalyzingProgress(Math.round(((i + 1) / notAnalyzed.length) * 100));
+      setApplications([...updatedApplications]);
+    }
+
+    setAnalyzing(false);
+    toast({
+      title: "تم التحليل",
+      description: `تم تحليل ${notAnalyzed.length} وافد بنجاح`,
+    });
   };
 
 
@@ -154,8 +222,9 @@ const Index = () => {
   const stats = [
     { label: "مخاطر منخفضة", value: lowRiskCount.toString(), color: "bg-green-500", route: "/risk-applicants/low" },
     { label: "مخاطر عالية", value: highRiskCount.toString(), color: "bg-red-500", route: "/risk-applicants/high" },
-    { label: "لم يتم التحليل", value: notAnalyzedCount.toString(), color: "bg-gray-500", route: null },
   ];
+
+  const showAnalyzeButton = notAnalyzedCount > 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -169,8 +238,39 @@ const Index = () => {
           </h1>
         </div>
 
+        {/* Analyze All Button */}
+        {showAnalyzeButton && (
+          <Card className="mb-8 border-primary/20 bg-primary/5">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">تحليل الوافدين بالذكاء الاصطناعي</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {notAnalyzedCount} وافد لم يتم تحليلهم بعد
+                  </p>
+                  {analyzing && (
+                    <p className="text-sm text-primary mt-1">جاري التحليل... {analyzingProgress}%</p>
+                  )}
+                </div>
+                <Button 
+                  onClick={analyzeAllApplicants} 
+                  disabled={analyzing}
+                  className="gap-2"
+                >
+                  {analyzing ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-4 h-4" />
+                  )}
+                  {analyzing ? 'جاري التحليل...' : 'تحليل الجميع'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Statistics Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-8">
           {stats.map((stat, index) => (
             <Card 
               key={index} 
