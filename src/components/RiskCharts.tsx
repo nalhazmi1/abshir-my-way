@@ -91,8 +91,8 @@ const RiskCharts = ({ applicants }: RiskChartsProps) => {
                 <YAxis
                   dataKey="name"
                   type="category"
-                  width={100}
-                  tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }}
+                  width={120}
+                  tick={{ fontSize: 14, fill: "hsl(var(--foreground))", fontWeight: 500 }}
                   tickLine={{ stroke: "hsl(var(--border))" }}
                   axisLine={{ stroke: "hsl(var(--border))" }}
                 />
@@ -172,10 +172,10 @@ const RiskCharts = ({ applicants }: RiskChartsProps) => {
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={avgRiskChartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} />
+                <XAxis dataKey="name" tick={{ fontSize: 14, fill: "hsl(var(--foreground))", fontWeight: 500 }} />
                 <YAxis 
                   domain={[0, 100]} 
-                  tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }}
+                  tick={{ fontSize: 14, fill: "hsl(var(--foreground))", fontWeight: 500 }}
                   tickLine={{ stroke: "hsl(var(--border))" }}
                   axisLine={{ stroke: "hsl(var(--border))" }}
                 />
