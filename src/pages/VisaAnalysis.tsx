@@ -46,72 +46,6 @@ interface AIAnalysis {
   recommendation: string;
 }
 
-const parseCSV = (csvText: string): ApplicantData[] => {
-  const lines = csvText.trim().split("\n");
-  const headers = lines[0].split(",");
-  
-  return lines.slice(1).map(line => {
-    const values: string[] = [];
-    let current = "";
-    let inQuotes = false;
-    
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === "," && !inQuotes) {
-        values.push(current);
-        current = "";
-      } else {
-        current += char;
-      }
-    }
-    values.push(current);
-    
-    const row: Record<string, string> = {};
-    headers.forEach((header, index) => {
-      row[header] = values[index] || "";
-    });
-
-    let violations: Violation[] = [];
-    try {
-      if (row.violations && row.violations !== "[]") {
-        violations = JSON.parse(row.violations);
-      }
-    } catch {
-      violations = [];
-    }
-
-    let riskAnalysis: string | null = null;
-    if (row.risk_analysis) {
-      riskAnalysis = row.risk_analysis;
-    }
-    
-    return {
-      id: row.id,
-      full_name: row.full_name,
-      nationality: row.nationality,
-      passport_number: row.passport_number,
-      birth_date: row.birth_date,
-      gender: row.gender,
-      visa_type: row.visa_type,
-      entry_date: row.entry_date,
-      exit_date: row.exit_date,
-      sponsor: row.sponsor,
-      profession: row.profession,
-      employer: row.employer || null,
-      work_experience_years: parseInt(row.work_experience_years) || 0,
-      monthly_salary: row.monthly_salary ? parseInt(row.monthly_salary) : null,
-      has_violations: row.has_violations === "true",
-      violations,
-      education_level: row.education_level,
-      previous_visits: parseInt(row.previous_visits) || 0,
-      risk_score: row.risk_score ? parseInt(row.risk_score) : null,
-      risk_analysis: riskAnalysis,
-      status: row.status || "pending",
-    };
-  });
-};
 
 const VisaAnalysis = () => {
   const { id } = useParams<{ id: string }>();
@@ -129,9 +63,8 @@ const VisaAnalysis = () => {
 
   const fetchApplicant = async () => {
     try {
-      const response = await fetch("/data/visa_applicants.csv");
-      const csvText = await response.text();
-      const applicants = parseCSV(csvText);
+      const response = await fetch("/data/visa_applicants.json");
+      const applicants: ApplicantData[] = await response.json();
       const applicant = applicants.find(a => a.id === id);
       
       if (applicant) {

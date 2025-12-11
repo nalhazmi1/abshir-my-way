@@ -22,49 +22,8 @@ interface VisaApplicant {
   passport_number: string;
   visa_type: string;
   status: string;
-  created_at: string;
   risk_score: number | null;
 }
-
-const parseCSV = (csvText: string): VisaApplicant[] => {
-  const lines = csvText.trim().split("\n");
-  const headers = lines[0].split(",");
-  
-  return lines.slice(1).map(line => {
-    const values: string[] = [];
-    let current = "";
-    let inQuotes = false;
-    
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === "," && !inQuotes) {
-        values.push(current);
-        current = "";
-      } else {
-        current += char;
-      }
-    }
-    values.push(current);
-    
-    const row: Record<string, string> = {};
-    headers.forEach((header, index) => {
-      row[header] = values[index] || "";
-    });
-    
-    return {
-      id: row.id,
-      full_name: row.full_name,
-      nationality: row.nationality,
-      passport_number: row.passport_number,
-      visa_type: row.visa_type,
-      status: row.status || "pending",
-      created_at: new Date().toISOString(),
-      risk_score: row.risk_score ? parseInt(row.risk_score) : null,
-    };
-  });
-};
 
 const Index = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>("");
@@ -79,9 +38,8 @@ const Index = () => {
 
   const fetchApplications = async () => {
     try {
-      const response = await fetch("/data/visa_applicants.csv");
-      const csvText = await response.text();
-      const data = parseCSV(csvText);
+      const response = await fetch("/data/visa_applicants.json");
+      const data: VisaApplicant[] = await response.json();
       setApplications(data);
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -264,7 +222,7 @@ const Index = () => {
                 id={application.id}
                 name={application.full_name}
                 nationality={application.nationality}
-                applicationDate={application.created_at.split("T")[0]}
+                applicationDate={new Date().toISOString().split("T")[0]}
                 purpose={application.visa_type}
                 status={getStatusFromRisk(application.risk_score, application.status)}
                 passportNumber={application.passport_number}
