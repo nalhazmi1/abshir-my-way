@@ -103,7 +103,7 @@ const Index = () => {
         row.education_level || "",
         row.monthly_salary || "",
         row.work_experience_years || "",
-        row.previous_visits || "",
+        row.previous_visits ?? 0,
         row.has_violations ? "نعم" : "لا",
         row.status,
         row.risk_score || "",
