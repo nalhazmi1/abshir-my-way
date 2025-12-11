@@ -66,7 +66,8 @@ const VisaApplicationCard = ({
             </Badge>
           </div>
 
-          <div className="mb-3">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">نوع التأشيرة:</span>
             <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
               {purpose}
             </Badge>
