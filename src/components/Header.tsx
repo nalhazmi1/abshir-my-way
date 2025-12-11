@@ -58,9 +58,6 @@ const Header = () => {
 
           {/* Brand Logo on the left (RTL) */}
           <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-3xl font-bold text-saudi-green">ابشر</div>
-            </div>
             <div className="w-12 h-12">
               <svg viewBox="0 0 100 100" className="w-full h-full text-saudi-green fill-current">
                 <rect x="10" y="10" width="15" height="80" />
