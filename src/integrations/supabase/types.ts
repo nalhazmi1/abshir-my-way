@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      visa_applicants: {
+        Row: {
+          birth_date: string
+          created_at: string | null
+          education_level: string | null
+          employer: string | null
+          entry_date: string
+          exit_date: string
+          full_name: string
+          gender: string
+          has_violations: boolean | null
+          id: string
+          monthly_salary: number | null
+          nationality: string
+          passport_number: string
+          previous_visits: number | null
+          profession: string
+          risk_analysis: string | null
+          risk_score: number | null
+          sponsor: string
+          status: string | null
+          updated_at: string | null
+          violations: Json | null
+          visa_type: string
+          work_experience_years: number | null
+        }
+        Insert: {
+          birth_date: string
+          created_at?: string | null
+          education_level?: string | null
+          employer?: string | null
+          entry_date: string
+          exit_date: string
+          full_name: string
+          gender: string
+          has_violations?: boolean | null
+          id: string
+          monthly_salary?: number | null
+          nationality: string
+          passport_number: string
+          previous_visits?: number | null
+          profession: string
+          risk_analysis?: string | null
+          risk_score?: number | null
+          sponsor: string
+          status?: string | null
+          updated_at?: string | null
+          violations?: Json | null
+          visa_type: string
+          work_experience_years?: number | null
+        }
+        Update: {
+          birth_date?: string
+          created_at?: string | null
+          education_level?: string | null
+          employer?: string | null
+          entry_date?: string
+          exit_date?: string
+          full_name?: string
+          gender?: string
+          has_violations?: boolean | null
+          id?: string
+          monthly_salary?: number | null
+          nationality?: string
+          passport_number?: string
+          previous_visits?: number | null
+          profession?: string
+          risk_analysis?: string | null
+          risk_score?: number | null
+          sponsor?: string
+          status?: string | null
+          updated_at?: string | null
+          violations?: Json | null
+          visa_type?: string
+          work_experience_years?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

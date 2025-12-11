@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, Search, Filter } from "lucide-react";
 import Header from "@/components/Header";
 import VisaApplicationCard from "@/components/VisaApplicationCard";
@@ -13,74 +13,55 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+
+interface VisaApplicant {
+  id: string;
+  full_name: string;
+  nationality: string;
+  passport_number: string;
+  visa_type: string;
+  status: string;
+  created_at: string;
+  risk_score: number | null;
+}
 
 const Index = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [selectedNationality, setSelectedNationality] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [applications, setApplications] = useState<VisaApplicant[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const applications = [
-    {
-      id: "VSA-2024-1234",
-      name: "محمد أحمد",
-      nationality: "مصري",
-      applicationDate: "2024-11-28",
-      purpose: "سياحة",
-      status: "low-risk" as const,
-      passportNumber: "A12345678",
-    },
-    {
-      id: "VSA-2024-1235",
-      name: "فاطمة علي",
-      nationality: "سوري",
-      applicationDate: "2024-11-29",
-      purpose: "سياحة",
-      status: "pending" as const,
-      passportNumber: "B23456789",
-    },
-    {
-      id: "VSA-2024-1236",
-      name: "أحمد حسن",
-      nationality: "يمني",
-      applicationDate: "2024-11-27",
-      purpose: "عمرة",
-      status: "low-risk" as const,
-      passportNumber: "C34567890",
-    },
-    {
-      id: "VSA-2024-1237",
-      name: "خالد محمود",
-      nationality: "لبناني",
-      applicationDate: "2024-11-26",
-      purpose: "عمل",
-      status: "high-risk" as const,
-      passportNumber: "D45678901",
-    },
-    {
-      id: "VSA-2024-1238",
-      name: "مريم سعيد",
-      nationality: "أردني",
-      applicationDate: "2024-11-30",
-      purpose: "زيارة عائلية",
-      status: "pending" as const,
-      passportNumber: "E56789012",
-    },
-    {
-      id: "VSA-2024-1239",
-      name: "سعيد عبدالله",
-      nationality: "مغربي",
-      applicationDate: "2024-11-25",
-      purpose: "استثمار",
-      status: "low-risk" as const,
-      passportNumber: "F67890123",
-    },
-  ];
+  useEffect(() => {
+    fetchApplications();
+  }, []);
+
+  const fetchApplications = async () => {
+    const { data, error } = await supabase
+      .from("visa_applicants")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching applications:", error);
+    } else {
+      setApplications(data || []);
+    }
+    setLoading(false);
+  };
+
+  const getStatusFromRisk = (riskScore: number | null, status: string): "pending" | "low-risk" | "high-risk" => {
+    if (status === "pending" || riskScore === null) return "pending";
+    if (riskScore >= 60) return "high-risk";
+    return "low-risk";
+  };
 
   const stats = [
-    { label: "إجمالي الطلبات", value: "156", color: "bg-blue-500" },
-    { label: "قيد المراجعة", value: "45", color: "bg-yellow-500" },
-    { label: "مخاطر منخفضة", value: "98", color: "bg-green-500" },
-    { label: "مخاطر عالية", value: "13", color: "bg-red-500" },
+    { label: "إجمالي الطلبات", value: applications.length.toString(), color: "bg-blue-500" },
+    { label: "قيد المراجعة", value: applications.filter(a => a.status === "pending").length.toString(), color: "bg-yellow-500" },
+    { label: "مخاطر منخفضة", value: applications.filter(a => a.risk_score !== null && a.risk_score < 60).length.toString(), color: "bg-green-500" },
+    { label: "مخاطر عالية", value: applications.filter(a => a.risk_score !== null && a.risk_score >= 60).length.toString(), color: "bg-red-500" },
   ];
 
   return (
@@ -173,11 +154,24 @@ const Index = () => {
         </div>
 
         {/* Applications List */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {applications.map((application) => (
-            <VisaApplicationCard key={application.id} {...application} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-8 text-muted-foreground">جاري التحميل...</div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {applications.map((application) => (
+              <VisaApplicationCard
+                key={application.id}
+                id={application.id}
+                name={application.full_name}
+                nationality={application.nationality}
+                applicationDate={application.created_at.split("T")[0]}
+                purpose={application.visa_type}
+                status={getStatusFromRisk(application.risk_score, application.status)}
+                passportNumber={application.passport_number}
+              />
+            ))}
+          </div>
+        )}
       </main>
 
       <FloatingButtons />
