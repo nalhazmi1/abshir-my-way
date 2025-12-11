@@ -52,11 +52,6 @@ const Index = () => {
     setLoading(false);
   };
 
-  const getStatusFromRisk = (riskScore: number | null, status: string): "pending" | "low-risk" | "high-risk" => {
-    if (status === "pending" || riskScore === null) return "pending";
-    if (riskScore >= 60) return "high-risk";
-    return "low-risk";
-  };
 
   const exportToCSV = () => {
     if (applications.length === 0) {
@@ -223,9 +218,7 @@ const Index = () => {
                 id={application.id}
                 name={application.full_name}
                 nationality={application.nationality}
-                applicationDate={new Date().toISOString().split("T")[0]}
                 purpose={application.visa_type}
-                status={getStatusFromRisk(application.risk_score, application.status)}
                 passportNumber={application.passport_number}
               />
             ))}
