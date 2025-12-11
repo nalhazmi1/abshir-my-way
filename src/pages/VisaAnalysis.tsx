@@ -75,6 +75,18 @@ const VisaAnalysis = () => {
         ? (data.violations as unknown as Violation[])
         : [];
       setApplicantData({ ...data, violations });
+      
+      // Load saved AI analysis if exists
+      if (data.risk_analysis) {
+        try {
+          const savedAnalysis = JSON.parse(data.risk_analysis);
+          if (savedAnalysis.risk_score !== undefined) {
+            setAiAnalysis(savedAnalysis);
+          }
+        } catch {
+          // If not JSON, it's just text analysis from before
+        }
+      }
     }
     setLoading(false);
   };
@@ -94,12 +106,12 @@ const VisaAnalysis = () => {
 
       setAiAnalysis(data);
 
-      // Update the database with the risk score
+      // Update the database with the full AI analysis
       await supabase
         .from("visa_applicants")
         .update({
           risk_score: data.risk_score,
-          risk_analysis: data.analysis,
+          risk_analysis: JSON.stringify(data),
         })
         .eq("id", id);
 
