@@ -38,7 +38,7 @@ const VisaApplicationCard = ({
                 <p className="text-sm text-muted-foreground">{passportNumber}</p>
               </div>
             </div>
-            {hasRiskScore && (
+            {hasRiskScore ? (
               <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${isHighRisk ? "bg-red-500/10" : "bg-green-500/10"}`}>
                 {isHighRisk ? (
                   <AlertTriangle className="w-4 h-4 text-red-500" />
@@ -48,6 +48,10 @@ const VisaApplicationCard = ({
                 <span className={`text-sm font-bold ${isHighRisk ? "text-red-500" : "text-green-500"}`}>
                   {riskScore}%
                 </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gray-500/10">
+                <span className="text-xs text-gray-500">لم يتم التحليل</span>
               </div>
             )}
           </div>
