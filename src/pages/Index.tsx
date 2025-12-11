@@ -145,8 +145,6 @@ const Index = () => {
   });
 
   const stats = [
-    { label: "إجمالي الطلبات", value: applications.length.toString(), color: "bg-blue-500" },
-    { label: "قيد المراجعة", value: applications.filter(a => a.status === "pending").length.toString(), color: "bg-yellow-500" },
     { label: "مخاطر منخفضة", value: applications.filter(a => a.risk_score !== null && a.risk_score < 60).length.toString(), color: "bg-green-500" },
     { label: "مخاطر عالية", value: applications.filter(a => a.risk_score !== null && a.risk_score >= 60).length.toString(), color: "bg-red-500" },
   ];
@@ -157,17 +155,15 @@ const Index = () => {
       
       <main className="container mx-auto px-4 py-8">
         {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-4xl font-bold text-foreground">
             تحليل المخاطر
           </h1>
+          <HighRiskNotifications applicants={applications} />
         </div>
 
-        {/* High Risk Notifications */}
-        <HighRiskNotifications applicants={applications} />
-
         {/* Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-8">
           {stats.map((stat, index) => (
             <Card key={index} className="overflow-hidden">
               <CardContent className="p-6">
